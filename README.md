@@ -29,6 +29,7 @@ Api will be written in Python to be developed rapidly. The frontend will be in R
 ## Competition
 
 https://www.lopp.net/bitcoin-information/block-explorers.html
+
 Differentiation can be found on:
 UI (few competitors have clean UI)
 Responsiveness (explorers tend to be slow especially when they have visualization)
