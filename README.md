@@ -45,6 +45,8 @@ git clone https://github.com/etiennebch/yabe
 mkdir -p yabe/db/data
 ```
 
+## Database installation
+
 Now launch the local database (you need docker-compose installed). You'll also need the psql CLI installed to log into the database.
 
 ```shell
@@ -52,3 +54,12 @@ cd yabe/db
 docker-compose up -d
 psql -U postgres -p 5433 -h localhost
 ```
+
+## Database migration
+
+Database migrations are handled by a dockerized Flyway, which is setup as part of the docker-compose file.
+In order for migrations to run the following environment variables must be declared:
+
+- `YABE_API_ROLENAME`
+- `YABE_API_PASSWORD`
+- `YABE_DB_NAME`

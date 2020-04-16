@@ -8,6 +8,14 @@ services:
     volumes:
       - ./data:/data
     env_file:
-      - local.env
+      - ./conf/local.env
     ports:
       - 5433:5432
+  flyway:
+    image: flyway/flyway
+    volumes:
+      - ./migrations:/flyway/sql
+      - ./conf:/flyway/conf
+    depends_on:
+      - db
+    command: -connectRetries=120 -placeholders.api_rolename=${YABE_API_ROLENAME} -placeholders.api_password=${YABE_API_PASSWORD} -placeholders.database_name=${YABE_DB_NAME} migrate -X
