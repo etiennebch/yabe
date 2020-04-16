@@ -15,6 +15,7 @@ class BaseConfig:
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_RECORD_QUERIES = False
     SQLALCHEMY_ENGINE_OPTIONS = {"hide_parameters": True, "pool_size": 5, "pool_recycle": 3600}
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class LocalConfig(BaseConfig):

@@ -3,6 +3,7 @@
 from flask import Flask
 
 from api.blueprint.block.router import block
+from api.config.default import LocalConfig
 from api.extension import db
 
 
@@ -24,17 +25,20 @@ def _register_extensions(app):
     db.init_app(app)
 
 
-def create_app(secret=None):
+def create_app(secret, environment):
     """Create the Flask instance.
 
     :param secret: filepath to the secret configuration json file.
-    :type config: string.
+    :type secret: string.
+    :param environment: the environment to use when creating the server.
+    :type environment: string.
     :returns: a configured Flask instance.
     :rtype: flask.Flask.
     """
     app = Flask(__name__.split(".")[0], root_path=__name__.split(".")[0])
-    if secret:
-        app.config.from_json(secret)
+    app.config.from_json(secret)
+    if environment == "local":
+        app.config.from_object(LocalConfig)
 
     _register_extensions(app)
     _register_blueprints(app)

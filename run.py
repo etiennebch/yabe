@@ -6,15 +6,16 @@ import os
 from api.server import create_app
 
 
-def run(secret):
+def run(secret, environment):
     """Run the API server.
     """
-    app = create_app(secret)
+    app = create_app(secret, environment)
     app.run(debug=True)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the api server.", prog="yabe")
-    parser.add_argument("--secret", help="The path to the secret configuration file.", required=True)
+    parser.add_argument("--environment", help="The environment to use to start the server.", choices=["local"], default="local")
     ns = parser.parse_args()
-    run(os.path.abspath(ns.secret))
+    filepath = os.path.abspath(f"api/config/{ns.environment}.secret.json")
+    run(filepath, ns.environment)
