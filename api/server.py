@@ -3,6 +3,7 @@
 from flask import Flask
 
 from api.blueprint.block.router import block
+from api.blueprint.healthcheck.router import healthcheck
 from api.config.default import LocalConfig
 from api.extension import db
 
@@ -14,6 +15,7 @@ def _register_blueprints(app):
     :type app: flask.Flask.
     """
     app.register_blueprint(block)
+    app.register_blueprint(healthcheck)
 
 
 def _register_extensions(app):
@@ -38,7 +40,7 @@ def create_app(secret, environment):
     app = Flask(__name__.split(".")[0], root_path=__name__.split(".")[0])
     app.config.from_json(secret)
     if environment == "local":
-        app.config.from_object(LocalConfig)
+        app.config.from_object(LocalConfig(app.config))
 
     _register_extensions(app)
     _register_blueprints(app)
