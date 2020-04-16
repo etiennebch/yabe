@@ -1,6 +1,4 @@
-CREATE ROLE ${api_rolename} NOSUPERUSER NOCREATEDB NOCREATEROLE LOGIN ENCRYPTED PASSWORD ${api_password};
-
-CREATE DATABASE ${database_name} ENCODING 'UTF-8';
+CREATE ROLE ${api_rolename} NOSUPERUSER NOCREATEDB NOCREATEROLE LOGIN ENCRYPTED PASSWORD '${api_password}';
 
 /* the btc schema stores information about the Bitcoin blockchain.
 **/
@@ -16,5 +14,5 @@ GRANT USAGE ON ALL SEQUENCES IN SCHEMA btc TO ${api_rolename};
 
 /* grant default privileges for future objects
 **/
-ALTER DEFAULT PRIVILEGES FOR ${api_rolename} IN SCHEMA btc GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ${api_rolename};
-ALTER DEFAULT PRIVILEGES FOR ${api_rolename} IN SCHEMA btc USAGE ON SEQUENCES TO ${api_rolename};
+ALTER DEFAULT PRIVILEGES IN SCHEMA btc GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ${api_rolename};
+ALTER DEFAULT PRIVILEGES IN SCHEMA btc GRANT USAGE ON SEQUENCES TO ${api_rolename};
