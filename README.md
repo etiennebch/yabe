@@ -35,3 +35,20 @@ UI (few competitors have clean UI)
 Responsiveness (explorers tend to be slow especially when they have visualization)
 Great and useful visualizations (maps, graph, charts of fees and other financial information)
 Privacy. This is a big topic as users may browse their transactions.
+
+# Setup instructions
+
+Clone the repository and create an empty directory `data` in `db`. This directory is gitignore and holds the local database file.
+
+```shell
+git clone https://github.com/etiennebch/yabe
+mkdir -p yabe/db/data
+```
+
+Now launch the local database (you need docker-compose installed). You'll also need the psql CLI installed to log into the database.
+
+```shell
+cd yabe/db
+docker-compose up -d
+psql -U postgres -p 5433 -h localhost
+```
