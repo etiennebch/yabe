@@ -1,0 +1,13 @@
+# setup a local database environment
+version: "3.7"
+services:
+  db:
+    image: postgres:12
+    restart: always
+    container_name: postgres
+    volumes:
+      - ./data:/data
+    env_file:
+      - local.env
+    ports:
+      - 5433:5432

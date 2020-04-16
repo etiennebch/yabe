@@ -1,2 +1,4 @@
 env
 .vscode
+db/data/*
+!db/data/README.md
