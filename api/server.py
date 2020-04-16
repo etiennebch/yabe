@@ -3,6 +3,7 @@
 from flask import Flask
 
 from api.blueprint.block.router import block
+from api.extension import db
 
 
 def _register_blueprints(app):
@@ -12,6 +13,15 @@ def _register_blueprints(app):
     :type app: flask.Flask.
     """
     app.register_blueprint(block)
+
+
+def _register_extensions(app):
+    """Register extensions.
+    
+    :param app: the Flask instance.
+    :type app: flask.Flask.
+    """
+    db.init_app(app)
 
 
 def create_app(config=None):
@@ -26,6 +36,7 @@ def create_app(config=None):
     if config:
         app.config.from_json(config)
 
+    _register_extensions(app)
     _register_blueprints(app)
 
     return app
