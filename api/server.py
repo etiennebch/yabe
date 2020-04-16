@@ -24,17 +24,17 @@ def _register_extensions(app):
     db.init_app(app)
 
 
-def create_app(config=None):
+def create_app(secret=None):
     """Create the Flask instance.
 
-    :param config: the filename to the JSON configuration of the Flask server.
+    :param secret: filepath to the secret configuration json file.
     :type config: string.
     :returns: a configured Flask instance.
     :rtype: flask.Flask.
     """
     app = Flask(__name__.split(".")[0], root_path=__name__.split(".")[0])
-    if config:
-        app.config.from_json(config)
+    if secret:
+        app.config.from_json(secret)
 
     _register_extensions(app)
     _register_blueprints(app)
