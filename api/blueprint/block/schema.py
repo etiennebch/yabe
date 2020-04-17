@@ -27,14 +27,19 @@ class BlockSchema(serialization.ResourceMixin):
         required=True,
         description="Unix timestamp when the miner started hashing the header, according to the miner's clock.",
     )
-    nbits = fields.Integer(
-        strict=True,
-        required=True,
-        description="Compact format of the target threshold below which the block header hash must be.",
-    )
     target = fields.String(
         required=True,
         description="Target threshold below which the block header hash must be, in hash form.",
+    )
+    pdifficulty = fields.Decimal(
+        as_string=True,
+        dump_only=True,
+        description="The pool difficulty computed as the ratio between the non truncated genesis target and the block target.",
+    )
+    bdifficulty = fields.Decimal(
+        as_string=True,
+        dump_only=True,
+        description="The approximate difficulty computed as the ratio between the truncated genesis target and the block target.",
     )
     nonce = fields.Integer(
         strict=True, required=True, description="The value miners change to solve the proof of work.",
