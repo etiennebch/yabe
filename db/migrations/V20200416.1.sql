@@ -18,6 +18,7 @@ CREATE TABLE btc.block (
      * https://en.bitcoin.it/wiki/Block_hashing_algorithm
      * https://github.com/bitcoin/bitcoin/blob/master/src/primitives/block.h
     **/
+    -- https://bitcoin.org/en/developer-reference#block-versions
     block_version INTEGER NOT NULL,
     -- hash of the previous block
     previous_hash BYTEA NOT NULL,
