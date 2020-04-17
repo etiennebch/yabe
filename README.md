@@ -53,6 +53,9 @@ Now launch the local database (you need docker-compose installed). You'll also n
 cd yabe/db
 docker-compose up -d
 psql -U postgres -p 5433 -h localhost
+
+# required statement
+CREATE DATABASE explorer ENCODING 'UTF-8';
 ```
 
 ## Database migration
