@@ -36,12 +36,14 @@ CREATE TABLE btc.block (
     **/
     -- the height is the distance to the genesis block.
     height INTEGER NOT NULL,
-    -- the amount in BTC unlocked by the coinbase transaction when the block is mined.
-    block_subsidy NUMERIC NOT NULL,
-    -- the value un BTC of all inputs of this block's transactions
-    block_input NUMERIC NOT NULL,
-    -- the value in BTC of all outputs of this block's transactions. 
-    block_output NUMERIC NOT NULL
+    -- https://github.com/bitcoin/bitcoin/blob/master/src/amount.h
+    -- NB: 1 BTC = 100 000 000 satoshis
+    -- the amount in satoshi unlocked by the coinbase transaction when the block is mined.
+    block_subsidy BIGINT NOT NULL,
+    -- the value in satoshi of all inputs of this block's transactions
+    block_input BIGINT NOT NULL,
+    -- the value in satoshi of all outputs of this block's transactions. 
+    block_output BIGINT NOT NULL
 );
 
 CREATE INDEX idx_block__block_hash ON btc.block USING HASH (block_hash);
