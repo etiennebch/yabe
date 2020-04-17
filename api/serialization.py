@@ -1,15 +1,21 @@
 """Serialization and deserialization wrappers around marshmallow types.
 """
-from marshmallow import fields
+from marshmallow import Schema, fields
+
+from api.config import version
 
 
-class Identifier(fields.Integer):
-    """An Identifier field to share across our schemas.
+class BaseMixin(Schema):
+    """A base schema from which to extend other resources.
     """
 
-    def __init__(self, *args, **kwargs):
-        """Constructor.
-        """
-        super(Identifier, self).__init__(
-            *args, strict=True, data_key="id", dump_only=True, description="The resource unique identifier.", **kwargs
-        )
+    id_ = fields.Integer(
+        strict=True, data_key="id", dump_only=True, description="The resource unique identifier."
+    )
+
+
+class VersionMixin(Schema):
+    """A mixin to include the api version information in schemas.
+    """
+
+    api_version = fields.String(default=version.API_VERSION, dump_only=True, description="The api version.")
