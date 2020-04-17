@@ -2,6 +2,7 @@
 Sensitive and runtime specific values are not on source control and are provided at runtime
 using the --secret option.
 """
+from api.config import version
 
 
 class BaseConfig:
@@ -40,6 +41,12 @@ class BaseConfig:
         Assumes the existence of variables loaded from the secret.
         """
         return f"postgresql+psycopg2://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
+
+    @property
+    def API_VERSION(self):
+        """The version of the api.
+        """
+        return version.API_VERSION
 
 
 class LocalConfig(BaseConfig):
