@@ -16,7 +16,10 @@ def run(secret, environment):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the api server.", prog="yabe")
     parser.add_argument(
-        "--environment", help="The environment to use to start the server.", choices=["local"], default="local"
+        "--environment",
+        help="The environment to use to start the server.",
+        choices=["local"],
+        default="local",
     )
     ns = parser.parse_args()
     filepath = os.path.abspath(f"api/config/{ns.environment}.secret.json")
