@@ -5,13 +5,13 @@ from marshmallow import fields
 from api import serialization
 
 
-class BlockSchema(serialization.BaseMixin, serialization.VersionMixin):
+class BlockSchema(serialization.ResourceMixin):
     """The schema for the JSON representation of a block resource.
     """
 
-    object_ = fields.String(
-        data_key="object", default="block", dump_only=True, description="Type of resource."
-    )
+    @staticmethod
+    def object_name():
+        return "block"
 
     hash_ = fields.String(data_key="hash", required=True, description="Hash of the block.")
     size = fields.Integer(strict=True, required=True, description="Size of the block in bytes.")
