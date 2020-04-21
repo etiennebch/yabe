@@ -12,7 +12,7 @@ class VersionMixin:
     """
 
     @post_dump
-    def add_version(self, data):
+    def add_version(self, data, **kwargs):
         """Add an api_version field to the serialized output.
         """
         data.update({"api_version": version.API_VERSION})
@@ -32,7 +32,7 @@ class ResourceMixin(Schema, VersionMixin):
         """
 
     @post_dump
-    def add_object(self, data):
+    def add_object(self, data, **kwargs):
         """Add an object field to the serialized output.
         """
         data.update({"object": self.object_name().lower()})
