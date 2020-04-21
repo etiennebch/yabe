@@ -4,6 +4,7 @@ use the driver directly.
 This module focuses on providing the database connection to the flask application.
 """
 from flask import g
+from psycopg2.extras import RealDictCursor
 from psycopg2.pool import ThreadedConnectionPool
 
 
@@ -27,6 +28,7 @@ class Database:
             password=app.config["DATABASE_PASSWORD"],
             host=app.config["DATABASE_HOST"],
             port=app.config["DATABASE_PORT"],
+            cursor_factory=RealDictCursor,
         )
 
         self.pool = ThreadedConnectionPool(minconn, maxconn, **params)
