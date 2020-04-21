@@ -19,5 +19,5 @@ RETRIEVE = """
         block_output AS output,
         (block_input - block_output) AS transaction_fee
     FROM btc.block
-    WHERE id = :id
+    WHERE id = %(id)s
 """
