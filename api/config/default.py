@@ -24,23 +24,14 @@ class BaseConfig:
     SESSION_COOKIE_SECURE = True
     MAX_CONTENT_LENGTH = 32768  # 32Kb
 
-    # SQLAlchemy configuration
-    SQLALCHEMY_ECHO = False
-    SQLALCHEMY_RECORD_QUERIES = False
-    SQLALCHEMY_ENGINE_OPTIONS = {"hide_parameters": True, "pool_size": 5, "pool_recycle": 3600}
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Database configuration
+    POOL_MIN_CONNECTONS = 2
+    POOL_MAX_CONNECTONS = 6
 
     # Serialization with marshmallow
     NULL_FIELD_MESSAGE = "this field may not be null."
     REQUIRED_FIELD_MESSAGE = "this field is required."
     INVALID_FIELD_MESSAGE = "this field is invalid."
-
-    @property
-    def SQLALCHEMY_DATABASE_URI(self):
-        """SQLALCHEMY_DATABASE_URI variable.
-        Assumes the existence of variables loaded from the secret.
-        """
-        return f"postgresql+psycopg2://{self.DATABASE_USER}:{self.DATABASE_PASSWORD}@{self.DATABASE_HOST}:{self.DATABASE_PORT}/{self.DATABASE_NAME}"
 
     @property
     def API_VERSION(self):

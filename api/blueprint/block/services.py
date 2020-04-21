@@ -2,8 +2,8 @@
 """
 from api.blueprint.block import sql, util
 from api.blueprint.block.schema import BlockSchema
+from api.database import db
 from api.error.definition import ResourceNotFound
-from api.extension import db
 
 
 def retrieve_block(block_id):
@@ -14,15 +14,17 @@ def retrieve_block(block_id):
     :returns: the query result as a marshmallow schema.
     :rtype: BlockSchema.
     """
-    result = db.session.execute(sql.RETRIEVE, {"id": block_id}).fetchone()
+    result = db.connection.execute(sql.RETRIEVE, {"id": block_id})
     if result is None:
         raise ResourceNotFound(BlockSchema.object_name(), block_id, parameter="id")
 
+    data = result.fetchone()
+
     # target and difficulty are tricky to derive from nbits so we do it here instead of in the query
     # the value is the hexadecimal representation of the target with the leading 0x.
-    target = util.compute_target(result["nbits"])
+    target = util.compute_target(data["nbits"])
     pdiff = util.compute_pdiff(target)
     bdiff = util.compute_bdiff(target)
-    result.update({"target": f"{target}:#066x", "pdifficulty": pdiff, "bdifficulty": bdiff})
+    data.update({"target": f"{target}:#066x", "pdifficulty": pdiff, "bdifficulty": bdiff})
 
-    return BlockSchema(dict(result))
+    return BlockSchema(data)

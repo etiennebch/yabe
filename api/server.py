@@ -3,12 +3,13 @@
 from flask import Flask
 from marshmallow import fields
 
+from api import before, teardown
 from api.blueprint.block.router import block
 from api.blueprint.healthcheck.router import healthcheck
 from api.config.default import LocalConfig
+from api.database import db
 from api.encoding import JSONEncoder
 from api.error.handler import jsonify_error_handler
-from api.extension import db
 
 
 def _register_blueprints(app):
@@ -24,7 +25,7 @@ def _register_blueprints(app):
     return app
 
 
-def _register_extensions(app):
+def _register_database(app):
     """Register extensions.
     
     :param app: the Flask instance.
@@ -81,9 +82,11 @@ def create_app(secret, environment):
 
     app.json_encoder = JSONEncoder
 
-    _ = _register_extensions(app)
+    _ = _register_database(app)
     _ = _register_blueprints(app)
     _ = _configure_marshmallow(app)
     _ = _register_error_handlers(app)
+    _ = app.before_request(before.acquire_database_connection)
+    _ = app.teardown_appcontext(teardown.release_database_connection)
 
     return app

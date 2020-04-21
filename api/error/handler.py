@@ -3,7 +3,6 @@
 from http import HTTPStatus
 
 from flask import jsonify
-from marshmallow import Schema, fields, post_dump
 from werkzeug.exceptions import HTTPException, InternalServerError
 
 from api.error.definition import BaseError
