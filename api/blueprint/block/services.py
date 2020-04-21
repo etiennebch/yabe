@@ -2,7 +2,7 @@
 """
 from api.blueprint.block import sql, util
 from api.blueprint.block.schema import BlockSchema
-from api.blueprint.error.definition import NotFound
+from api.error.definition import ResourceNotFound
 from api.extension import db
 
 
@@ -16,7 +16,7 @@ def retrieve_block(block_id):
     """
     result = db.session.execute(sql.RETRIEVE, {"id": block_id}).fetchone()
     if result is None:
-        raise NotFound(BlockSchema.object_name(), block_id, parameter="id")
+        raise ResourceNotFound(BlockSchema.object_name(), block_id, parameter="id")
 
     # target and difficulty are tricky to derive from nbits so we do it here instead of in the query
     # the value is the hexadecimal representation of the target with the leading 0x.

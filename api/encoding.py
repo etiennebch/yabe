@@ -2,7 +2,10 @@
 """
 import json
 
-from api.blueprint.error.definition import BaseError
+from werkzeug.exceptions import HTTPException
+
+from api.error.definition import BaseError
+from api.error.serialization import http_exception_as_json
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -14,4 +17,6 @@ class JSONEncoder(json.JSONEncoder):
         """
         if isinstance(obj, BaseError):
             return obj.as_json()
+        if isinstance(obj, HTTPException):
+            return http_exception_as_json(obj)
         return json.JSONEncoder.default(self, obj)

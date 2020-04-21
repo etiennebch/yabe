@@ -2,11 +2,11 @@
 """
 from http import HTTPStatus
 
-from api.blueprint.error.schema import ErrorSchema
+from api.error.schema import ErrorSchema
 
 
 class BaseError(Exception):
-    """A base class for exception handling.
+    """A base class to derive api exceptions.
     """
 
     def as_json(self):
@@ -18,7 +18,6 @@ class BaseError(Exception):
                 "error": {
                     "status": self.status,
                     "code": self.code,
-                    "type": self.type,
                     "message": self.message,
                     "url": self.url,
                     "parameter": self.parameter,
@@ -27,7 +26,7 @@ class BaseError(Exception):
         )
 
 
-class NotFound(BaseError):
+class ResourceNotFound(BaseError):
     """Error raised when resources are not found.
     """
 
@@ -43,8 +42,7 @@ class NotFound(BaseError):
         """
         self.status = HTTPStatus.NOT_FOUND
         self.code = "resource_not_found"
-        self.type = "invalid_request"
         self.message = f"No such {resource_name}: {id_}."
         self.parameter = parameter
         self.url = None
-        super(NotFound, self).__init__()
+        super(ResourceNotFound, self).__init__()

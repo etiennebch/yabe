@@ -1,4 +1,4 @@
-"""Marshmallow schema for the error blueprint.
+"""Schema for the JSON representation of an error.
 """
 from marshmallow import Schema, fields, post_dump
 

@@ -4,11 +4,10 @@ from flask import Flask
 from marshmallow import fields
 
 from api.blueprint.block.router import block
-from api.blueprint.error.definition import BaseError
-from api.blueprint.error.handler import handle_base_error
 from api.blueprint.healthcheck.router import healthcheck
 from api.config.default import LocalConfig
 from api.encoding import JSONEncoder
+from api.error.handler import jsonify_error_handler
 from api.extension import db
 
 
@@ -61,7 +60,7 @@ def _register_error_handlers(app):
     :returns: the configured Flask instance.
     :rtype: flask.Flask.
     """
-    app.register_error_handler(BaseError, handle_base_error)
+    app.register_error_handler(Exception, jsonify_error_handler)
     return app
 
 
@@ -79,6 +78,7 @@ def create_app(secret, environment):
     app.config.from_json(secret)
     if environment == "local":
         app.config.from_object(LocalConfig(app.config))
+
     app.json_encoder = JSONEncoder
 
     _ = _register_extensions(app)
