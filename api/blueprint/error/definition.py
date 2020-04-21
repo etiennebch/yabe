@@ -1,8 +1,33 @@
 """Class-based error definitions.
 """
+from http import HTTPStatus
+
+from api.blueprint.error.schema import ErrorSchema
 
 
-class NotFound(Exception):
+class BaseError(Exception):
+    """A base class for exception handling.
+    """
+
+    def as_json(self):
+        """Return a schema-compliant JSON representation of the error.
+        """
+        schema = ErrorSchema()
+        return schema.dump(
+            {
+                "error": {
+                    "status": self.status,
+                    "code": self.code,
+                    "type": self.type,
+                    "message": self.message,
+                    "url": self.url,
+                    "parameter": self.parameter,
+                }
+            }
+        )
+
+
+class NotFound(BaseError):
     """Error raised when resources are not found.
     """
 
@@ -16,7 +41,7 @@ class NotFound(Exception):
         :param parameter: the parameter that caused the error if any.
         :type parameter: string.
         """
-        self.status = 404
+        self.status = HTTPStatus.NOT_FOUND
         self.code = "resource_not_found"
         self.type = "invalid_request"
         self.message = f"No such {resource_name}: {id_}."

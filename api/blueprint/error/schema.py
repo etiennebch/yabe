@@ -2,11 +2,11 @@
 """
 from marshmallow import Schema, fields, post_dump
 
-from api import serialization
+from api import schema
 
 
-class ErrorItemSchema(Schema):
-    """The schema for the details of an error.
+class InnerErrorSchema(Schema):
+    """The schema for the JSON representation of error details.
     """
 
     status = fields.Integer(strict=True, dump_only=True, description="Corresponding HTTP status.")
@@ -17,15 +17,25 @@ class ErrorItemSchema(Schema):
     parameter = fields.String(dump_only=True, description="Parameter that caused the error, when relevant.")
 
     @post_dump
-    def remove_none(self, data):
+    def remove_none(self, data, **kwargs):
         """Remove None values.
         For instance, not all errors have to do with a parameter.
         """
         return {k: v for k, v in data.items() if v is not None}
 
+    @post_dump
+    def remove_id(self, data, **kwargs):
+        """Remove id from the ResourceMixin as it does not make sense in the context of errors..
+        """
+        return {k: v for k, v in data.items() if k != "id"}
 
-class ErrorSchema(serialization.VersionMixin):
+
+class ErrorSchema(schema.ResourceMixin):
     """The schema for the JSON representation of an error.
     """
 
-    error = fields.Nested(ErrorItemSchema)
+    error = fields.Nested(InnerErrorSchema, dump_only=True, description="Details of the error.")
+
+    @staticmethod
+    def object_name():
+        return "error"
