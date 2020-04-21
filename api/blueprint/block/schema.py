@@ -2,10 +2,10 @@
 """
 from marshmallow import fields
 
-from api import serialization
+from api import schema
 
 
-class BlockSchema(serialization.ResourceMixin):
+class BlockSchema(schema.ResourceMixin):
     """The schema for the JSON representation of a block resource.
     """
 
