@@ -1,5 +1,7 @@
 """Endpoints for the healthcheck blueprint.
 """
+from flask import current_app
+
 from api.database import db
 
 
@@ -8,7 +10,8 @@ def ping():
     """
     try:
         db.cursor.execute("SELECT 1")
-    # TODO: add logging
     except Exception as e:
+        current_app.logger.exception(str(e))
         return ("", 503)
+    current_app.logger.info("healthcheck passed")
     return ("", 200)

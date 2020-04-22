@@ -9,7 +9,11 @@ _base_dict = {
     "incremental": False,
     "disable_existing_loggers": True,
     "formatters": {
-        "default": {"format": '%(levelname)s [%(asctime)s] "%(message)s"', "datefmt": "%Y-%m-%dT%H:%M:%S",}
+        "default": {
+            "()": "api.logging.formatter.UTCFormatter",
+            "fmt": "%(asctime)s %(levelname)s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S %Z",
+        }
     },
     "filters": {},
     "handlers": {
@@ -58,6 +62,7 @@ class LocalConfig(BaseConfig):
             {app_name: {"level": logging.DEBUG, "propagate": False, "filters": [], "handlers": ["console"]}}
         )
         logging.getLogger("werkzeug").disabled = True
+        super().__init__()
 
     @property
     def config_dict(self):
