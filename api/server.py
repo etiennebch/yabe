@@ -1,5 +1,7 @@
 """Functions to create and configure the Flask server.
 """
+import logging
+
 from flask import Flask
 from marshmallow import fields
 
@@ -10,6 +12,7 @@ from api.config.default import LocalConfig
 from api.database import db
 from api.encoding import JSONEncoder
 from api.error.handler import jsonify_error_handler
+from api.logging.config import LocalConfig as LocalLoggerConfig
 
 
 def _register_blueprints(app):
@@ -79,6 +82,7 @@ def create_app(secret, environment):
     app.config.from_json(secret)
     if environment == "local":
         app.config.from_object(LocalConfig(app.config))
+        LocalLoggerConfig(app.name).configure()
 
     app.json_encoder = JSONEncoder
 
