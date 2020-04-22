@@ -18,9 +18,9 @@ class BaseConfig:
         for k, v in secret.items():
             setattr(self, k, v)
 
-    DEBUG = False
     TESTING = False
-    ENV = "poduction"
+    DEBUG = True
+    ENV = "production"
     SESSION_COOKIE_SECURE = True
     MAX_CONTENT_LENGTH = 32768  # 32Kb
 
@@ -44,15 +44,11 @@ class LocalConfig(BaseConfig):
     """Local configuration for Flask.
     """
 
-    DEBUG = True
     TESTING = True
+    DEBUG = True
     ENV = "development"
     # TODO: requires HTTPS in local env
     SESSION_COOKIE_SECURE = False
-
-    # SQLAlchemy configuration
-    SQLALCHEMY_ECHO = True
-    SQLALCHEMY_ENGINE_OPTIONS = {"hide_parameters": False}
 
 
 class ProductionConfig(BaseConfig):
