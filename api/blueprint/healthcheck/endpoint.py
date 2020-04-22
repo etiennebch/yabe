@@ -11,7 +11,7 @@ def ping():
     try:
         db.cursor.execute("SELECT 1")
     except Exception as e:
-        current_app.logger.exception(str(e))
+        current_app.logger.exception(e)
         return ("", 503)
     current_app.logger.info("healthcheck passed")
     return ("", 200)

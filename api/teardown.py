@@ -1,6 +1,6 @@
 """Teardown request and app context hooks.
 """
-from flask import g
+from flask import current_app, g
 
 from api.database import db
 
@@ -26,7 +26,6 @@ def release_database_connection(exception, *args, **kwargs):
             g._database_connection.commit()
         db.pool.putconn(g._database_connection)
         g.pop("_database_connection")
-    except:
-        # TODO log
-        pass
+    except Exception as e:
+        current_app.logger.exception(e)
     return None
