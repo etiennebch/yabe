@@ -2,7 +2,13 @@
 **/
 CREATE TABLE btc.block (
     
+    /*
+     * api resource information
+    **/
     id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1001 NO CYCLE),
+    -- time when the resource was created
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
     block_hash BYTEA NOT NULL,
 
     -- the size of the block in bytes. A block is valid under consensus rules if less than 1Mb.
@@ -35,8 +41,8 @@ CREATE TABLE btc.block (
     nonce BIGINT NOT NULL,
 
     /* mining data
-     * NB: we have transaction_fees = block_input - block_output
-     * NB: we have transaction_fees + block_subsidy = block reward
+     * NB: we have transaction_fee = block_input - block_output
+     * NB: we have transaction_fee + block_subsidy = block reward
     **/
     -- the height is the distance to the genesis block.
     height INTEGER NOT NULL,
@@ -44,12 +50,24 @@ CREATE TABLE btc.block (
     -- NB: 1 BTC = 100 000 000 satoshis
     -- the amount in satoshi unlocked by the coinbase transaction when the block is mined.
     block_subsidy BIGINT NOT NULL,
-    -- the value in satoshi of all inputs of this block's transactions
+    -- the value in satoshi of all inputs of this block's transactions.
     block_input BIGINT NOT NULL,
     -- the value in satoshi of all outputs of this block's transactions. 
     block_output BIGINT NOT NULL,
+    -- the value in satoshi of the transaction fee.
+    transaction_fee BIGINT NOT NULL,
 
-    CONSTRAINT pk_block__block_id PRIMARY KEY (id)
+    CONSTRAINT pk_block__block_id PRIMARY KEY (id),
+    CONSTRAINT uq_block__block_hash UNIQUE (block_hash),
+    CONSTRAINT ck_block__size CHECK (size > 0),
+    CONSTRAINT ck_block__transaction_counter CHECK (transaction_counter >= 0),
+    CONSTRAINT ck_block__blokc_version CHECK(block_version > 0),
+    CONSTRAINT ck_block__nonce CHECK(nonce >= 0),
+    CONSTRAINT ck_block__height CHECK(height >= 0),
+    CONSTRAINT ck_block__block_subsidy CHECK(block_subsidy >= 0),
+    CONSTRAINT ck_block__block_output CHECK(block_output >= 0),
+    CONSTRAINT ck_block__block_input CHECK(block_input >= 0),
+    CONSTRAINT ck_block__transaction_fee CHECK(transaction_fee >= 0 AND transaction_fee = block_input - block_output)
 );
 
 CREATE INDEX idx_block__block_hash ON btc.block USING HASH (block_hash);
