@@ -35,8 +35,14 @@ class Database:
         return app
 
     @property
-    def connection(self):
-        """Returns a thread-local connection for use within the context of a request.
+    def cursor(self):
+        """Returns a cursor from a thread-local connection for use within the context of a request.
+        g is thread-local so g._database_connection is thread-local.
+        In psycpopg2, a connection can spawn multiple cursors which are not isolated. Commit and
+        rollback takes effect at the connection level and thus affect all statements executed by
+        the cursors spawned from that connection.
+        The connection is closed/put back to the pool upon teardown.
+        If an exception occur, the transaction is rolled back, otherwise it is committed.
         """
         return g._database_connection.cursor()
 

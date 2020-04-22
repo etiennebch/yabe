@@ -14,7 +14,7 @@ def retrieve_block(block_id):
     :returns: the query result as a marshmallow schema.
     :rtype: BlockSchema.
     """
-    result = db.connection.execute(sql.RETRIEVE, {"id": block_id})
+    result = db.cursor.execute(sql.RETRIEVE, {"id": block_id})
     if result is None:
         raise ResourceNotFound(BlockSchema.object_name(), block_id, parameter="id")
 
