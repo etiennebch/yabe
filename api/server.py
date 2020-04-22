@@ -87,6 +87,6 @@ def create_app(secret, environment):
     _ = _configure_marshmallow(app)
     _ = _register_error_handlers(app)
     _ = app.before_request(before.acquire_database_connection)
-    _ = app.teardown_appcontext(teardown.release_database_connection)
+    _ = app.teardown_request(teardown.release_database_connection)
 
     return app
