@@ -1,20 +1,20 @@
 """Schema for the JSON representation of an error.
 """
-from marshmallow import Schema, fields, post_dump
+from marshmallow import Schema, post_dump
 
-from api import schema
+from api.serialization import field, schema
 
 
 class InnerErrorSchema(Schema):
     """The schema for the JSON representation of error details.
     """
 
-    status = fields.Integer(strict=True, dump_only=True, description="Corresponding HTTP status.")
-    code = fields.String(dump_only=True, description="Error code.")
-    type = fields.String(dump_only=True, description="General category of error.")
-    message = fields.String(dump_only=True, description="An explanation and resolution steps for the error.")
-    url = fields.String(dump_only=True, description="A link to look for help about the error.")
-    parameter = fields.String(dump_only=True, description="Parameter that caused the error, when relevant.")
+    status = field.Integer(strict=True, dump_only=True, description="Corresponding HTTP status.")
+    code = field.String(dump_only=True, description="Error code.")
+    type = field.String(dump_only=True, description="General category of error.")
+    message = field.String(dump_only=True, description="An explanation and resolution steps for the error.")
+    url = field.String(dump_only=True, description="A link to look for help about the error.")
+    parameter = field.String(dump_only=True, description="Parameter that caused the error, when relevant.")
 
     @post_dump
     def remove_none(self, data, **kwargs):
@@ -34,7 +34,7 @@ class ErrorSchema(schema.ResourceMixin):
     """The schema for the JSON representation of an error.
     """
 
-    error = fields.Nested(InnerErrorSchema, dump_only=True, description="Details of the error.")
+    error = field.Nested(InnerErrorSchema, dump_only=True, description="Details of the error.")
 
     @staticmethod
     def object_name():
