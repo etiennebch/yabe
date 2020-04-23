@@ -8,3 +8,4 @@ from api.blueprint.block import endpoint
 block = Blueprint("block", __name__, url_prefix="/blocks")
 
 block.add_url_rule("/<int:block_id>", endpoint="retrieve", methods=["GET"], view_func=endpoint.retrieve)
+block.add_url_rule("", endpoint="create", methods=["POST"], view_func=endpoint.create)
