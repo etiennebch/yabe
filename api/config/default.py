@@ -28,11 +28,6 @@ class BaseConfig:
     POOL_MIN_CONNECTONS = 2
     POOL_MAX_CONNECTONS = 6
 
-    # Serialization with marshmallow
-    NULL_FIELD_MESSAGE = "this field may not be null."
-    REQUIRED_FIELD_MESSAGE = "this field is required."
-    INVALID_FIELD_MESSAGE = "this field is invalid."
-
     @property
     def API_VERSION(self):
         """The version of the api.
