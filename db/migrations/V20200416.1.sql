@@ -30,8 +30,7 @@ CREATE TABLE btc.block (
     previous_hash BYTEA NOT NULL,
     -- merke root of the transactions contained in this block
     merkle_root_hash BYTEA NOT NULL,
-    -- we don't care about the time zone as the timestamp is always obtained as seconds since unix epoch.
-    block_timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    block_timestamp BIGINT NOT NULL,
     -- nbits is the compact form of the block target. Bitcoin uses unsigned int32.
     -- as the position of each byte is critical we use bytea here to store the data.
     -- https://en.bitcoin.it/wiki/Difficulty#How_is_difficulty_stored_in_blocks.3F
