@@ -3,6 +3,8 @@ As we don't use SQLAlchemy (neither core nor ORM), it makes much more sense to
 use the driver directly.
 This module focuses on providing the database connection to the flask application.
 """
+from contextlib import contextmanager
+
 from flask import g
 from psycopg2.extras import RealDictCursor
 from psycopg2.pool import ThreadedConnectionPool
@@ -34,7 +36,7 @@ class Database:
         self.pool = ThreadedConnectionPool(minconn, maxconn, **params)
         return app
 
-    @property
+    @contextmanager
     def cursor(self):
         """Returns a cursor from a thread-local connection for use within the context of a request.
         g is thread-local so g._database_connection is thread-local.
@@ -44,7 +46,11 @@ class Database:
         The connection is closed/put back to the pool upon teardown.
         If an exception occur, the transaction is rolled back, otherwise it is committed.
         """
-        return g._database_connection.cursor()
+        cursor = g._database_connection.cursor()
+        try:
+            yield cursor
+        finally:
+            cursor.close()
 
 
 db = Database()
