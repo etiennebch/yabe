@@ -1,18 +1,15 @@
 """Functions to create and configure the Flask server.
 """
-import logging
-
 from flask import Flask
-from marshmallow import fields
 
 from api import before, teardown
 from api.blueprint.block.router import block
 from api.blueprint.healthcheck.router import healthcheck
 from api.config.default import LocalConfig
 from api.database import db
-from api.encoding import JSONEncoder
 from api.error.handler import jsonify_error_handler
 from api.logging.config import LocalConfig as LocalLoggerConfig
+from api.serialization.encoding import JSONEncoder
 
 
 def _register_blueprints(app):
@@ -37,22 +34,6 @@ def _register_database(app):
     :rtype: flask.Flask.
     """
     db.init_app(app)
-    return app
-
-
-def _configure_marshmallow(app):
-    """Configure app-wide marshmallow settings.
-
-    :param app: the Flask instance.
-    :type app: flask.Flask.
-    :returns: the configured Flask instance.
-    :rtype: flask.Flask.
-    """
-    fields.Field.default_error_messages = {
-        "null": app.config["NULL_FIELD_MESSAGE"],
-        "required": app.config["REQUIRED_FIELD_MESSAGE"],
-        "validator_failed": app.config["INVALID_FIELD_MESSAGE"],
-    }
     return app
 
 
@@ -88,7 +69,6 @@ def create_app(secret, environment):
 
     _ = _register_database(app)
     _ = _register_blueprints(app)
-    _ = _configure_marshmallow(app)
     _ = _register_error_handlers(app)
     _ = app.before_request(before.acquire_database_connection)
     _ = app.teardown_request(teardown.release_database_connection)
