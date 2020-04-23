@@ -36,13 +36,13 @@ def compute_target(nbit):
     * complexities of the sign bit and using base 256 are probably an
     * implementation accident.
 
-    :param nbit: the difficulty of the block in the compact form. nbit may or may
-    not be in little endian representation, this function handles the conversion if needed.
-    :type nbit: bytes (difficulty in little endian representation, compact form).
+    :param nbit: the difficulty of the block in the compact form. nbit is assumed to be ordered little endian and can be
+    represented as a uint32 integer (4 bytes).
+    :type nbit: bytes.
     :returns: the target of the block.
     :rtype: int.
     """
-    exponent = nbit[-1]
+    exponent = int.from_bytes(nbit[-1], byteorder="little", signed=False)
     mantissa = int.from_bytes(nbit[:-1], byteorder="little", signed=False)
     # since targets are never negative in practice, we don't care about the sign.
     # https://en.bitcoin.it/wiki/Difficulty#How_is_difficulty_stored_in_blocks.3F
