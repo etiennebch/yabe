@@ -9,6 +9,7 @@ from api.config.default import LocalConfig
 from api.database import db
 from api.error.handler import jsonify_error_handler
 from api.logging.config import LocalConfig as LocalLoggerConfig
+from api.schema import store
 from api.serialization.encoding import JSONEncoder
 
 
@@ -49,6 +50,17 @@ def _register_error_handlers(app):
     return app
 
 
+def _register_schemas(app):
+    """Register schema for resources validation.
+
+    :param app: the Flask instance.
+    :type app: flask.Flask.
+    :returns: the configured Flask instance.
+    :rtype: flask.Flask.
+    """
+    return store.init_app(app)
+
+
 def create_app(secret, environment):
     """Create the Flask instance.
 
@@ -70,6 +82,7 @@ def create_app(secret, environment):
     _ = _register_database(app)
     _ = _register_blueprints(app)
     _ = _register_error_handlers(app)
+    _ = _register_schemas(app)
     _ = app.before_request(before.acquire_database_connection)
     _ = app.teardown_request(teardown.release_database_connection)
 

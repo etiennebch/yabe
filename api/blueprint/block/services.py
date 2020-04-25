@@ -1,9 +1,13 @@
 """Service layer for the block blueprint.
 """
+from jsonschema import Draft7Validator
+
 from api.blueprint.block import sql, util
-from api.blueprint.block.schema import BlockSchema, InnerBlockSchema
+from api.config import version
 from api.database import db
 from api.error.definition import ResourceNotFound
+from api.resource import ApiResource
+from api.schema import store
 
 
 def retrieve(block_id):
@@ -16,26 +20,40 @@ def retrieve(block_id):
     """
     result = db.cursor.execute(sql.RETRIEVE, {"id": block_id})
     if result is None:
-        raise ResourceNotFound(BlockSchema.object_name(), block_id, parameter="id")
+        raise ResourceNotFound(ApiResource.BLOCK, block_id, parameter="id")
 
     data = result.fetchone()
     data = _add_target_information(data)
+    return data
+    # return {"id": block_id, "created_at": data.pop("created_at"), "data": data}
 
-    schema = BlockSchema()
-    return schema.dump({"id": block_id, "created_at": data.pop("created_at"), "data": data})
 
-
+# TODO parameter formatting should be handled in separate functions
 def create(**kwargs):
     """Create a block.
     """
-    schema = InnerBlockSchema()
-    params = schema.load(kwargs)
-    data = None
+    validator = Draft7Validator(store.block)
+    validator.validate(kwargs)
+
+    params = {k: v for k, v in kwargs.items()}
+    params["nbits"] = params["nbits"].to_bytes(4, byteorder="little", signed=False)
+    params["hash"] = bytearray.fromhex(params["hash"])
+    params["merkle_root"] = bytearray.fromhex(params["merkle_root"])
+    params["previous_hash"] = bytearray.fromhex(params["previous_hash"])
+
     with db.cursor() as cursor:
         cursor.execute(sql.CREATE, params)
         data = dict(cursor.fetchone())
+
     data = _add_target_information(data)
-    return schema.dump(data)
+    data["nbits"] = int.from_bytes(data["nbits"], byteorder="little", signed=False)
+    data["hash"] = data["hash"].hex()
+    data["merkle_root"] = data["merkle_root"].hex()
+    data["previous_hash"] = data["previous_hash"].hex()
+    data["api_version"] = version.API_VERSION
+    data["object"] = ApiResource.BLOCK.value
+    data["created_at"] = int(data["created_at"].timestamp())
+    return data
 
 
 def list(**kwargs):
@@ -57,5 +75,5 @@ def _add_target_information(data):
     target = util.compute_target(data["nbits"])
     pdiff = util.compute_pdiff(target)
     bdiff = util.compute_bdiff(target)
-    data.update({"target": f"{target:#066x}", "pdifficulty": pdiff, "bdifficulty": bdiff})
+    data.update({"target": f"{target:#066x}", "pdifficulty": str(pdiff), "bdifficulty": str(bdiff)})
     return data

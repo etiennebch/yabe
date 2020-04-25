@@ -48,5 +48,6 @@ CREATE = """
         block_subsidy AS subsidy,
         block_input AS input,
         block_output AS output,
-        transaction_fee
+        transaction_fee,
+        created_at
 """

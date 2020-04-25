@@ -1,6 +1,6 @@
 """Serialization helpers for errors.
 """
-from api.error.schema import ErrorSchema
+from api.config import version
 
 
 def http_exception_as_json(exception):
@@ -11,15 +11,14 @@ def http_exception_as_json(exception):
     :returns: a dictionary representation of the exception.
     :rtype: dict.
     """
-    schema = ErrorSchema()
-    return schema.dump(
-        {
-            "error": {
-                "status": exception.code,
-                "code": exception.name.lower().replace(" ", "_"),
-                "message": exception.description,
-                "url": None,
-                "parameter": None,
-            }
-        }
-    )
+    return {
+        "object": "error",
+        "api_version": version.API_VERSION,
+        "error": {
+            "status": exception.code,
+            "code": exception.name.lower().replace(" ", "_"),
+            "message": exception.description,
+            "url": None,
+            "parameter": None,
+        },
+    }

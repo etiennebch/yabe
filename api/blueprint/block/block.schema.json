@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://www.yabe.com/schema/block.schema.json",
+  "title": "Block",
+  "description": "The block api resource.",
+  "type": "object",
+  "properties": {
+    "api_version": {
+      "type": "string",
+      "description": "The version of the api.",
+      "readOnly": true,
+      "enum": ["0.1.0"]
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "The creation time of this resource as the number of seconds since UNIX epoch.",
+      "readOnly": true
+    },
+    "object": {
+      "type": "string",
+      "description": "The name of the resource. Always block.",
+      "const": "block"
+    },
+    "hash": {
+      "type": "string",
+      "description": "The hash of the block header."
+    },
+    "size": {
+      "type": "integer",
+      "description": "The size of the block in bytes."
+    },
+    "transaction_count": {
+      "type": "integer",
+      "description": "Number of transactions included in the block."
+    },
+    "version": {
+      "type": "integer",
+      "description": "The version of the block as included in the block header."
+    },
+    "previous_hash": {
+      "type": "string",
+      "description": "The hash of the previous block's header."
+    },
+    "merkle_root": {
+      "type": "string",
+      "description": "The root hash of the block merkle tree."
+    },
+    "timestamp": {
+      "type": "integer",
+      "description": "The time when the miner started to hash the block header, as provided by the miner's clock, as the number of seconds since the UNIX epoch."
+    },
+    "nbits": {
+      "type": "integer",
+      "description": "The compact form of the difficulty."
+    },
+    "target": {
+      "type": "string",
+      "description": "Target threshold below which the hash of a block header hash must be.",
+      "readOnly": true
+    },
+    "pdifficulty": {
+      "type": "string",
+      "description": "The pool difficulty computed as the ratio between the non truncated genesis target and the block target. The pdifficulty is provided as a string to keep precision.",
+      "readOnly": true
+    },
+    "bdifficulty": {
+      "type": "string",
+      "description": "The approximate difficulty computed as the ratio between the truncated genesis target and the block target. The bdifficulty is provided as a string to keep precision.",
+      "readOnly": true
+    },
+    "nonce": {
+      "type": "integer",
+      "description": "The value miners change to solve the proof of work."
+    },
+    "height": {
+      "type": "integer",
+      "description": "The distance to the genesis block.",
+      "readOnly": true
+    },
+    "subsidy": {
+      "type": "integer",
+      "description": "The amount of satoshis that mining the block releases."
+    },
+    "input": {
+      "type": "integer",
+      "description": "The sum of the block's transactions inputs in satoshis."
+    },
+    "output": {
+      "type": "integer",
+      "description": "The sum of the block's transactions outputs in satoshis."
+    },
+    "transaction_fee": {
+      "type": "integer",
+      "description": "The difference between the input and the output in satoshis."
+    },
+    "confirmations": {
+      "type": "integer",
+      "description": "The distance to the tip of the blockchain.",
+      "readOnly": true
+    }
+  },
+  "required": [
+    "hash",
+    "size",
+    "transaction_count",
+    "version",
+    "previous_hash",
+    "merkle_root",
+    "timestamp",
+    "nbits",
+    "nonce",
+    "subsidy",
+    "input",
+    "output",
+    "transaction_fee"
+  ],
+  "additionalProperties": false
+}
