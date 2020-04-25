@@ -5,7 +5,6 @@ CREATE TABLE btc.block (
     /*
      * api resource information
     **/
-    id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1001 NO CYCLE),
     -- time when the resource was created
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -56,8 +55,7 @@ CREATE TABLE btc.block (
     -- the value in satoshi of the transaction fee.
     transaction_fee BIGINT NOT NULL,
 
-    CONSTRAINT pk_block__block_id PRIMARY KEY (id),
-    CONSTRAINT uq_block__block_hash UNIQUE (block_hash),
+    CONSTRAINT pk_block__block_hash PRIMARY KEY (block_hash),
     CONSTRAINT ck_block__size CHECK (size > 0),
     CONSTRAINT ck_block__transaction_counter CHECK (transaction_counter >= 0),
     CONSTRAINT ck_block__blokc_version CHECK(block_version > 0),
