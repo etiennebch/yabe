@@ -10,22 +10,31 @@ from api.resource import ApiResource
 from api.schema import store
 
 
-def retrieve(block_id):
+def retrieve(block_hash):
     """Retrieve a block.
     
-    :param block_id: the id of the block to retrieve.
-    :type block_id: integer.
-    :returns: the query result as a marshmallow schema.
-    :rtype: BlockSchema.
+    :param block_hash: the hash of the block to retrieve.
+    :type block_id: string.
+    :returns: the query result.
+    :rtype: dict.
     """
-    result = db.cursor.execute(sql.RETRIEVE, {"id": block_id})
+    result = None
+    with db.cursor() as cursor:
+        cursor.execute(sql.RETRIEVE, {"hash": bytearray.fromhex(block_hash)})
+        result = cursor.fetchone()
     if result is None:
-        raise ResourceNotFound(ApiResource.BLOCK, block_id, parameter="id")
+        raise ResourceNotFound(ApiResource.BLOCK, block_hash, parameter="id")
 
-    data = result.fetchone()
+    data = dict(result)
     data = _add_target_information(data)
+    data["nbits"] = int.from_bytes(data["nbits"], byteorder="little", signed=False)
+    data["hash"] = data["hash"].hex()
+    data["merkle_root"] = data["merkle_root"].hex()
+    data["previous_hash"] = data["previous_hash"].hex()
+    data["api_version"] = version.API_VERSION
+    data["object"] = ApiResource.BLOCK.value
+    data["created_at"] = int(data["created_at"].timestamp())
     return data
-    # return {"id": block_id, "created_at": data.pop("created_at"), "data": data}
 
 
 # TODO parameter formatting should be handled in separate functions
@@ -54,6 +63,19 @@ def create(**kwargs):
     data["object"] = ApiResource.BLOCK.value
     data["created_at"] = int(data["created_at"].timestamp())
     return data
+
+
+def delete(block_hash):
+    """Delete a block.
+
+    :param block_hash: the hash of the block to delete.
+    :type block_id: string.
+    :returns: the deletion message.
+    :rtype: dict.
+    """
+    with db.cursor() as cursor:
+        cursor.execute(sql.DELETE, {"hash": bytearray.fromhex(block_hash)})
+    return {"object": ApiResource.BLOCK.value, "hash": block_hash, "deleted": True}
 
 
 def list(**kwargs):

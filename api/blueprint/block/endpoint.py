@@ -8,10 +8,10 @@ from api.blueprint.block import services
 from api.decorators import listable
 
 
-def retrieve(block_id):
+def retrieve(block_hash):
     """Retrieve a specific block id.
     """
-    block_data = services.retrieve(block_id)
+    block_data = services.retrieve(block_hash)
     return (jsonify(block_data), HTTPStatus.OK)
 
 
@@ -20,6 +20,14 @@ def create():
     """
     block_data = services.create(**request.json)
     return (jsonify(block_data), HTTPStatus.CREATED)
+
+
+def delete(block_hash):
+    """Delete a block.
+    For CRUD completeness and admin.
+    """
+    deleted = services.delete(block_hash)
+    return (jsonify(deleted), HTTPStatus.OK)
 
 
 @listable
