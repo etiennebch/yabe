@@ -32,9 +32,9 @@ class BaseError(Exception):
             "api_version": version.API_VERSION,
             "object": "error",
             "error": {
-                "type": self.type,
+                "type": self.type.value,
                 "status": self.status,
-                "code": self.code,
+                "code": self.code.value,
                 "message": self.message,
                 "url": self.url,
                 "parameter": self.parameter,
@@ -42,22 +42,7 @@ class BaseError(Exception):
         }
 
 
-class InvalidRequestError(BaseError):
-    """Error raised for invalid requests.
-    This error is for a whole range of requests that are client errors.
-    """
-
-    def __init__(self, code, status, message, parameter=None, url=None):
-        self.type = ErrorType.INVALID_REQUEST
-        self.code = code.value
-        self.message = message
-        self.parameter = parameter
-        self.url = url
-        self.status = status
-        super().__init__()
-
-
-class ResourceNotFound(InvalidRequestError):
+class ResourceNotFound(BaseError):
     """Error raised when resources are not found.
     """
 
@@ -71,11 +56,10 @@ class ResourceNotFound(InvalidRequestError):
         :param parameter: the parameter that caused the error if any.
         :type parameter: string.
         """
-        super().__init__(
-            ErrorCode.RESOURCE_NOT_FOUND,
-            HTTPStatus.NOT_FOUND,
-            f"No such {resource.name}: {id_}.",
-            parameter,
-            None,
-        )
-        super(ResourceNotFound, self).__init__()
+        self.type = ErrorType.INVALID_REQUEST
+        self.code = ErrorCode.RESOURCE_NOT_FOUND
+        self.status = HTTPStatus.NOT_FOUND
+        self.message = f"No such {resource.value}: {id_}."
+        self.parameter = parameter
+        self.url = None
+        super().__init__()
