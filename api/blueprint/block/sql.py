@@ -8,7 +8,7 @@ RETRIEVE = """
         size,
         transaction_counter AS transaction_count,
         block_version AS version,
-        previous_hash AS previous_hash,
+        previous_hash,
         merkle_root_hash AS merkle_root,
         block_timestamp AS timestamp,
         nbits,
@@ -17,9 +17,9 @@ RETRIEVE = """
         block_subsidy AS subsidy,
         block_input AS input,
         block_output AS output,
-        (block_input - block_output) AS transaction_fee
+        transaction_fee
     FROM btc.block
-    WHERE id = %(id)s
+    WHERE block_hash = %(hash)s
 """
 
 # Create a block record.
@@ -50,4 +50,9 @@ CREATE = """
         block_output AS output,
         transaction_fee,
         created_at
+"""
+
+# Delete a block record.
+DELETE = """
+    DELETE FROM btc.block WHERE block_hash = %(hash)s
 """
