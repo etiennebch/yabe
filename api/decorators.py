@@ -1,6 +1,6 @@
 """Decorators for the api endpoints.
 """
-from flask import request
+from flask import current_app, request
 
 
 def listable(f):
@@ -12,7 +12,7 @@ def listable(f):
         pagination = {
             "after": request.args.get("after"),
             "before": request.args.get("before"),
-            "limit": request.args.get("limit"),
+            "limit": int(request.args.get("limit", current_app.config["DEFAULT_LIMIT"])),
         }
         return f(*args, **kwargs, pagination=pagination)
 

@@ -28,6 +28,8 @@ class BaseConfig:
     POOL_MIN_CONNECTONS = 2
     POOL_MAX_CONNECTONS = 6
 
+    DEFAULT_LIMIT = 10
+
     @property
     def API_VERSION(self):
         """The version of the api.

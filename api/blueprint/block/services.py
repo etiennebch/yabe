@@ -1,5 +1,7 @@
 """Service layer for the block blueprint.
 """
+from collections import deque
+
 from jsonschema import Draft7Validator
 
 from api.blueprint.block import sql, util
@@ -52,10 +54,22 @@ def delete(block_hash: str) -> dict:
     return {"object": ApiResource.BLOCK, "hash": block_hash, "deleted": True}
 
 
-def list(**kwargs):
+def list(limit=None, after=None, before=None) -> dict:
     """List blocks.
     """
-    raise NotImplementedError()
+    result = None
+    with db.cursor() as cursor:
+        cursor.execute(sql.LIST, {"limit": int(limit)})
+        result = cursor.fetchall()
+    if result is None:
+        return {
+            "object": ApiResource.LIST,
+            "has_more": False,
+            "count": 0,
+            "data": [],
+            "api_version": version.API_VERSION,
+        }
+    return _to_list_result(result)
 
 
 def _add_target_information(data: dict) -> dict:
@@ -80,9 +94,7 @@ def _to_database_types(data: dict) -> dict:
     Note: this function alters its parameter, it is not pure.
 
     :param data: the data to insert. The data must come from a validated block json schema.
-    :type data: dict.
     :returns: a modified dictionary with the data ready to be inserted.
-    :rtype: dict.
     """
     data["nbits"] = data["nbits"].to_bytes(4, byteorder="little", signed=False)
     data["hash"] = bytearray.fromhex(data["hash"])
@@ -97,9 +109,7 @@ def _to_api_types(data: dict) -> dict:
     This is roughly the opposite of _to_database_types except that the data is enriched with computed, read-only values.
     
     :param data: the data coming from the database query. The data must conform to the block json schema.
-    :type data: dict.
     :returns: a modified dictionary with the data ready to be returned by the api.
-    :rtype: dict.
     """
     data = _add_target_information(data)
     data["nbits"] = int.from_bytes(data["nbits"], byteorder="little", signed=False)
@@ -110,3 +120,27 @@ def _to_api_types(data: dict) -> dict:
     data["object"] = ApiResource.BLOCK
     data["created_at"] = int(data["created_at"].timestamp())
     return data
+
+
+def _to_list_result(data: list) -> dict:
+    """Convert values coming from a list query on the database into the relevant list wrapper object for api consumers.
+    
+    :param data: the data coming from the database query. With the exception of the list specific fields, each item in the data must
+    conform to the block json schema. List specific fields are `count` and `has_more`.
+    :returns: a list wrapper object as a dictionary with the data ready to be returned by the api.
+    """
+    count = 0
+    has_more = False
+    blocks = deque()
+    for r in data:
+        block_data = _to_api_types(dict(r))
+        block_data.pop("count")
+        block_data.pop("has_more")
+        blocks.append(block_data)
+    return {
+        "object": ApiResource.LIST,
+        "has_more": has_more,
+        "count": count,
+        "data": blocks,
+        "api_version": version.API_VERSION,
+    }
