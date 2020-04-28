@@ -31,8 +31,8 @@ def delete(block_hash):
 
 
 @listable
-def list(pagination):
+def list_(pagination):
     """List blocks.
     """
-    list_data = services.list(**pagination)
+    list_data = services.list_(**pagination)
     return (jsonify(list_data), HTTPStatus.OK)

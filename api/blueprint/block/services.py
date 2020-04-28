@@ -1,7 +1,5 @@
 """Service layer for the block blueprint.
 """
-from collections import deque
-
 from jsonschema import Draft7Validator
 
 from api.blueprint.block import sql, util
@@ -54,7 +52,7 @@ def delete(block_hash: str) -> dict:
     return {"object": ApiResource.BLOCK, "hash": block_hash, "deleted": True}
 
 
-def list(limit=None, after=None, before=None) -> dict:
+def list_(limit=None, after=None, before=None) -> dict:
     """List blocks.
     """
     result = None
@@ -131,7 +129,7 @@ def _to_list_result(data: list) -> dict:
     """
     count = 0
     has_more = False
-    blocks = deque()
+    blocks = list()
     for r in data:
         block_data = _to_api_types(dict(r))
         block_data.pop("count")

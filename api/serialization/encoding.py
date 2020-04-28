@@ -1,7 +1,6 @@
 """JSON encoding and decoding.
 """
 import json
-from collections import deque
 
 from werkzeug.exceptions import HTTPException
 
@@ -23,6 +22,4 @@ class JSONEncoder(json.JSONEncoder):
             return http_exception_as_json(obj)
         if isinstance(obj, (ApiResource, ErrorCode, ErrorType)):
             return obj.value
-        if isinstance(obj, deque):
-            return list(obj)
         return json.JSONEncoder.default(self, obj)
