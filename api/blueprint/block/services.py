@@ -25,44 +25,20 @@ def retrieve(block_hash):
     if result is None:
         raise ResourceNotFound(ApiResource.BLOCK, block_hash, parameter="id")
 
-    data = dict(result)
-    data = _add_target_information(data)
-    data["nbits"] = int.from_bytes(data["nbits"], byteorder="little", signed=False)
-    data["hash"] = data["hash"].hex()
-    data["merkle_root"] = data["merkle_root"].hex()
-    data["previous_hash"] = data["previous_hash"].hex()
-    data["api_version"] = version.API_VERSION
-    data["object"] = ApiResource.BLOCK.value
-    data["created_at"] = int(data["created_at"].timestamp())
-    return data
+    return _to_api_types(dict(result))
 
 
-# TODO parameter formatting should be handled in separate functions
 def create(**kwargs):
     """Create a block.
     """
     validator = Draft7Validator(store.block)
     validator.validate(kwargs)
 
-    params = {k: v for k, v in kwargs.items()}
-    params["nbits"] = params["nbits"].to_bytes(4, byteorder="little", signed=False)
-    params["hash"] = bytearray.fromhex(params["hash"])
-    params["merkle_root"] = bytearray.fromhex(params["merkle_root"])
-    params["previous_hash"] = bytearray.fromhex(params["previous_hash"])
-
+    params = _to_database_types({k: v for k, v in kwargs.items()})
     with db.cursor() as cursor:
         cursor.execute(sql.CREATE, params)
         data = dict(cursor.fetchone())
-
-    data = _add_target_information(data)
-    data["nbits"] = int.from_bytes(data["nbits"], byteorder="little", signed=False)
-    data["hash"] = data["hash"].hex()
-    data["merkle_root"] = data["merkle_root"].hex()
-    data["previous_hash"] = data["previous_hash"].hex()
-    data["api_version"] = version.API_VERSION
-    data["object"] = ApiResource.BLOCK.value
-    data["created_at"] = int(data["created_at"].timestamp())
-    return data
+    return _to_api_types(data)
 
 
 def delete(block_hash):
@@ -98,4 +74,41 @@ def _add_target_information(data):
     pdiff = util.compute_pdiff(target)
     bdiff = util.compute_bdiff(target)
     data.update({"target": f"{target:#066x}", "pdifficulty": str(pdiff), "bdifficulty": str(bdiff)})
+    return data
+
+
+def _to_database_types(data):
+    """Convert values in the dictionary to the relevant database type for insert.
+    Note: this function alters its parameter, it is not pure.
+
+    :param data: the data to insert. The data must come from a validated block json schema.
+    :type data: dict.
+    :returns: a modified dictionary with the data ready to be inserted.
+    :rtype: dict.
+    """
+    data["nbits"] = data["nbits"].to_bytes(4, byteorder="little", signed=False)
+    data["hash"] = bytearray.fromhex(data["hash"])
+    data["merkle_root"] = bytearray.fromhex(data["merkle_root"])
+    data["previous_hash"] = bytearray.fromhex(data["previous_hash"])
+    return data
+
+
+def _to_api_types(data):
+    """Convert values coming from a database query into the relevant type for api consumers.
+    Note: this function alters its parameter, it is not pure.
+    This is roughly the opposite of _to_database_types except that the data is enriched with computed, read-only values.
+    
+    :param data: the data coming from the database query. The data must conform to the block json schema.
+    :type data: dict.
+    :returns: a modified dictionary with the data ready to be returned by the api.
+    :rtype: dict.
+    """
+    data = _add_target_information(data)
+    data["nbits"] = int.from_bytes(data["nbits"], byteorder="little", signed=False)
+    data["hash"] = data["hash"].hex()
+    data["merkle_root"] = data["merkle_root"].hex()
+    data["previous_hash"] = data["previous_hash"].hex()
+    data["api_version"] = version.API_VERSION
+    data["object"] = ApiResource.BLOCK.value
+    data["created_at"] = int(data["created_at"].timestamp())
     return data
