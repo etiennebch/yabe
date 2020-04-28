@@ -10,13 +10,11 @@ from api.resource import ApiResource
 from api.schema import store
 
 
-def retrieve(block_hash):
+def retrieve(block_hash: str) -> dict:
     """Retrieve a block.
     
     :param block_hash: the hash of the block to retrieve.
-    :type block_id: string.
     :returns: the query result.
-    :rtype: dict.
     """
     result = None
     with db.cursor() as cursor:
@@ -28,8 +26,10 @@ def retrieve(block_hash):
     return _to_api_types(dict(result))
 
 
-def create(**kwargs):
+def create(**kwargs) -> dict:
     """Create a block.
+
+    :returns: the created block data.
     """
     validator = Draft7Validator(store.block)
     validator.validate(kwargs)
@@ -41,13 +41,11 @@ def create(**kwargs):
     return _to_api_types(data)
 
 
-def delete(block_hash):
+def delete(block_hash: str) -> dict:
     """Delete a block.
 
     :param block_hash: the hash of the block to delete.
-    :type block_id: string.
     :returns: the deletion message.
-    :rtype: dict.
     """
     with db.cursor() as cursor:
         cursor.execute(sql.DELETE, {"hash": bytearray.fromhex(block_hash)})
@@ -60,7 +58,7 @@ def list(**kwargs):
     raise NotImplementedError()
 
 
-def _add_target_information(data):
+def _add_target_information(data: dict) -> dict:
     """Compute and add target information to block data returned by the database.
     Target and difficulty are tricky to derive from nbits so we do it here instead of in the query
     
@@ -77,7 +75,7 @@ def _add_target_information(data):
     return data
 
 
-def _to_database_types(data):
+def _to_database_types(data: dict) -> dict:
     """Convert values in the dictionary to the relevant database type for insert.
     Note: this function alters its parameter, it is not pure.
 
@@ -93,7 +91,7 @@ def _to_database_types(data):
     return data
 
 
-def _to_api_types(data):
+def _to_api_types(data: dict) -> dict:
     """Convert values coming from a database query into the relevant type for api consumers.
     Note: this function alters its parameter, it is not pure.
     This is roughly the opposite of _to_database_types except that the data is enriched with computed, read-only values.
