@@ -8,3 +8,4 @@ class ApiResource(Enum):
     """
 
     BLOCK = "block"
+    ERROR = "error"

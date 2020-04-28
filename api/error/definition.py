@@ -4,6 +4,7 @@ from enum import Enum
 from http import HTTPStatus
 
 from api.config import version
+from api.resource import ApiResource
 
 
 class ErrorType(Enum):
@@ -30,7 +31,7 @@ class BaseError(Exception):
         """
         return {
             "api_version": version.API_VERSION,
-            "object": "error",
+            "object": ApiResource.ERROR,
             "error": {
                 "type": self.type.value,
                 "status": self.status,

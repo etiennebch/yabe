@@ -1,6 +1,7 @@
 """Serialization helpers for errors.
 """
 from api.config import version
+from api.resource import ApiResource
 
 
 def http_exception_as_json(exception):
@@ -12,7 +13,7 @@ def http_exception_as_json(exception):
     :rtype: dict.
     """
     return {
-        "object": "error",
+        "object": ApiResource.ERROR,
         "api_version": version.API_VERSION,
         "error": {
             "status": exception.code,

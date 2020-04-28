@@ -51,7 +51,7 @@ def delete(block_hash):
     """
     with db.cursor() as cursor:
         cursor.execute(sql.DELETE, {"hash": bytearray.fromhex(block_hash)})
-    return {"object": ApiResource.BLOCK.value, "hash": block_hash, "deleted": True}
+    return {"object": ApiResource.BLOCK, "hash": block_hash, "deleted": True}
 
 
 def list(**kwargs):
@@ -109,6 +109,6 @@ def _to_api_types(data):
     data["merkle_root"] = data["merkle_root"].hex()
     data["previous_hash"] = data["previous_hash"].hex()
     data["api_version"] = version.API_VERSION
-    data["object"] = ApiResource.BLOCK.value
+    data["object"] = ApiResource.BLOCK
     data["created_at"] = int(data["created_at"].timestamp())
     return data
