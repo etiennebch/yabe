@@ -18,8 +18,11 @@ However, only the magic number, size and serialized block data is written to dis
 This can be seen in the function WriteBlockToDisk: https://github.com/bitcoin/bitcoin/blob/master/src/validation.cpp
 The function writes an **index header** which consists of the message start and the size
 
+NB: the current state of the code assumes well formed data and does not validate anything.
 """
 from typing import BinaryIO, Generator
+
+from blockchain.block import Block
 
 # the size in bytes of sections of the message header
 MESSAGE_START = 4
@@ -36,3 +39,9 @@ def read(file_: BinaryIO) -> Generator[bytes, None, None]:
     header = file_.read(offset)
     size = int.from_bytes(header[MESSAGE_START:], byteorder="little", signed=True)
     yield file_.read(size)
+
+
+def parse_block(data: bytes):
+    """Parse block data as obtained from the blk*.dat files.
+    """
+    return Block.deserialize(data)
