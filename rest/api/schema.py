@@ -18,7 +18,7 @@ class SchemaStore:
         :param app: the flask instance.
         :type app: flask.Flask.
         """
-        with open("api/blueprint/block/block.schema.json") as f:
+        with open("rest/api/blueprint/block/block.schema.json") as f:
             self._store[ApiResource.BLOCK] = json.load(f)
         return app
 

@@ -22,5 +22,5 @@ if __name__ == "__main__":
         default="local",
     )
     ns = parser.parse_args()
-    filepath = os.path.abspath(f"api/config/{ns.environment}.secret.json")
+    filepath = os.path.abspath(f"rest/api/config/{ns.environment}.secret.json")
     run(filepath, ns.environment)

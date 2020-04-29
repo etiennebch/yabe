@@ -1,5 +1,6 @@
 env
+env
 .vscode
-db/data
+rest/db/data
 *.pyc
-api/config/*.secret.json
+rest/api/config/*.secret.json
