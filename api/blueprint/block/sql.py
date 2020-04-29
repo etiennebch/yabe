@@ -58,12 +58,22 @@ DELETE = """
 """
 
 # List block records.
+# Pagination is based on the height because we can index
+# height with a Btree for fast retrieval and it supports inequality.
+# If using the block hash, we would not be able to take advantage of
+# an index to efficiently retrieve the data as HASH indices don't support inequality.
 LIST = """
     WITH ranked AS (
         SELECT
             *,
             RANK() OVER(ORDER BY created_at DESC, height DESC) AS rank
         FROM btc.block
+        WHERE
+            CASE
+                WHEN %(before)s IS NOT NULL THEN height > %(before)s::INTEGER
+                WHEN %(after)s IS NOT NULL THEN height < %(after)s::INTEGER
+                ELSE TRUE
+            END
     )
     SELECT
         created_at,
@@ -81,8 +91,8 @@ LIST = """
         block_input AS input,
         block_output AS output,
         transaction_fee,
-        (SELECT MAX(rank) from ranked) > %(limit)s AS has_more,
-        %(limit)s AS count
+        (SELECT MAX(rank) from ranked) > %(limit)s::INTEGER AS has_more,
+        %(limit)s::INTEGER AS count
     FROM ranked
-    WHERE rank <= %(limit)s
+    WHERE rank <= %(limit)s::INTEGER
 """

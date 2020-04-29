@@ -57,7 +57,7 @@ def list_(limit=None, after=None, before=None) -> dict:
     """
     result = None
     with db.cursor() as cursor:
-        cursor.execute(sql.LIST, {"limit": int(limit)})
+        cursor.execute(sql.LIST, {"limit": limit, "after": after, "before": before})
         result = cursor.fetchall()
     if result is None:
         return {

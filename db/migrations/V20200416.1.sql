@@ -68,3 +68,4 @@ CREATE TABLE btc.block (
 );
 
 CREATE INDEX idx_block__block_hash ON btc.block USING HASH (block_hash);
+CREATE INDEX idx_block__height ON btc.block USING BTREE (height);
