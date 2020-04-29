@@ -34,7 +34,7 @@ def create(**kwargs) -> dict:
     validator = Draft7Validator(store.block)
     validator.validate(kwargs)
 
-    params = _to_database_types({k: v for k, v in kwargs.items()})
+    params = _to_database_types(kwargs)
     with db.cursor() as cursor:
         cursor.execute(sql.CREATE, params)
         data = dict(cursor.fetchone())
@@ -70,54 +70,56 @@ def list_(limit=None, after=None, before=None) -> dict:
     return _to_list_result(result)
 
 
-def _add_target_information(data: dict) -> dict:
-    """Compute and add target information to block data returned by the database.
-    Target and difficulty are tricky to derive from nbits so we do it here instead of in the query
+def _get_difficulty(nbits: bytes) -> dict:
+    """Compute and return difficulty information.
     
-    :param data: the block data as returned by a create or retrieve query.
-    :type data: dict.
-    :returns: the updated data.
-    :rtype: dict.
+    :param nbits: the nbits data as returned by a create, retrieve or list query.
+    :returns: the difficulty information.
     """
     # the value is the hexadecimal representation of the target with the leading 0x.
-    target = util.compute_target(data["nbits"])
+    target = util.compute_target(nbits)
     pdiff = util.compute_pdiff(target)
     bdiff = util.compute_bdiff(target)
-    data.update({"target": f"{target:#066x}", "pdifficulty": str(pdiff), "bdifficulty": str(bdiff)})
-    return data
+    return {
+        "target": f"{target:#066x}",
+        "pdifficulty": str(pdiff),
+        "bdifficulty": str(bdiff),
+        "nbits": int.from_bytes(nbits, byteorder="little", signed=False),
+    }
 
 
 def _to_database_types(data: dict) -> dict:
-    """Convert values in the dictionary to the relevant database type for insert.
-    Note: this function alters its parameter, it is not pure.
+    """Convert values in the dictionary to the relevant database types for insert.
+    This function essentially maps the json schema to insert parameters.
 
     :param data: the data to insert. The data must come from a validated block json schema.
-    :returns: a modified dictionary with the data ready to be inserted.
+    :returns: a dictionary with the data ready to be accepted to parametrize an insert query.
     """
-    data["nbits"] = data["nbits"].to_bytes(4, byteorder="little", signed=False)
-    data["hash"] = bytearray.fromhex(data["hash"])
-    data["merkle_root"] = bytearray.fromhex(data["merkle_root"])
-    data["previous_hash"] = bytearray.fromhex(data["previous_hash"])
-    return data
+    params = data
+    params["hash"] = bytearray.fromhex(params["hash"])
+    params["nbits"] = params["difficulty"]["nbits"].to_bytes(4, byteorder="little", signed=False)
+    params["merkle_root"] = bytearray.fromhex(data["merkle_root"])
+    params["previous_hash"] = bytearray.fromhex(data["previous_hash"])
+    params.pop("difficulty")
+    return params
 
 
 def _to_api_types(data: dict) -> dict:
-    """Convert values coming from a database query into the relevant type for api consumers.
-    Note: this function alters its parameter, it is not pure.
+    """Convert values coming from a database query into the relevant types for api consumers.
     This is roughly the opposite of _to_database_types except that the data is enriched with computed, read-only values.
     
     :param data: the data coming from the database query. The data must conform to the block json schema.
-    :returns: a modified dictionary with the data ready to be returned by the api.
+    :returns: a dictionary with the data ready to be returned by the api.
     """
-    data = _add_target_information(data)
-    data["nbits"] = int.from_bytes(data["nbits"], byteorder="little", signed=False)
-    data["hash"] = data["hash"].hex()
-    data["merkle_root"] = data["merkle_root"].hex()
-    data["previous_hash"] = data["previous_hash"].hex()
-    data["api_version"] = version.API_VERSION
-    data["object"] = ApiResource.BLOCK
-    data["created_at"] = int(data["created_at"].timestamp())
-    return data
+    result = data
+    result["difficulty"] = _get_difficulty(result.pop("nbits"))
+    result["hash"] = result["hash"].hex()
+    result["merkle_root"] = result["merkle_root"].hex()
+    result["previous_hash"] = result["previous_hash"].hex()
+    result["api_version"] = version.API_VERSION
+    result["object"] = ApiResource.BLOCK
+    result["created_at"] = int(result["created_at"].timestamp())
+    return result
 
 
 def _to_list_result(data: list) -> dict:

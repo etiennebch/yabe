@@ -49,12 +49,12 @@ def _extract_validation_error(exception: ValidationError) -> BaseError:
         regex = r"^'([a-z0-9_]+)' is a required property$"
         pattern = re.compile(regex)
         field = pattern.match(exception.message).group(1)
-        return RequiredField(field)
+        return RequiredField(field, exception.path)
     if exception.validator == "additionalProperties" and not exception.validator_value:
         regex = r"^Additional properties are not allowed \('([a-z0-9_]+)' was unexpected\)$"
         pattern = re.compile(regex)
         field = pattern.match(exception.message).group(1)
-        return UnknownField(field)
+        return UnknownField(field, exception.path)
     if exception.validator == "type":
         return InvalidType(exception.path, exception.validator_value)
     return InternalServerError()

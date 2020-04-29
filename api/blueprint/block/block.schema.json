@@ -49,24 +49,31 @@
       "type": "integer",
       "description": "The time when the miner started to hash the block header, as provided by the miner's clock, as the number of seconds since the UNIX epoch."
     },
-    "nbits": {
-      "type": "integer",
-      "description": "The compact form of the difficulty."
-    },
-    "target": {
-      "type": "string",
-      "description": "Target threshold below which the hash of a block header hash must be.",
-      "readOnly": true
-    },
-    "pdifficulty": {
-      "type": "string",
-      "description": "The pool difficulty computed as the ratio between the non truncated genesis target and the block target. The pdifficulty is provided as a string to keep precision.",
-      "readOnly": true
-    },
-    "bdifficulty": {
-      "type": "string",
-      "description": "The approximate difficulty computed as the ratio between the truncated genesis target and the block target. The bdifficulty is provided as a string to keep precision.",
-      "readOnly": true
+    "difficulty": {
+      "type": "object",
+      "description": "Data about the difficulty of this block.",
+      "properties": {
+        "nbits": {
+          "type": "integer",
+          "description": "The compact form of the difficulty."
+        },
+        "target": {
+          "type": "string",
+          "description": "Target threshold below which the hash of a block header hash must be.",
+          "readOnly": true
+        },
+        "pdifficulty": {
+          "type": "string",
+          "description": "The pool difficulty computed as the ratio between the non truncated genesis target and the block target. The pdifficulty is provided as a string to keep precision.",
+          "readOnly": true
+        },
+        "bdifficulty": {
+          "type": "string",
+          "description": "The approximate difficulty computed as the ratio between the truncated genesis target and the block target. The bdifficulty is provided as a string to keep precision.",
+          "readOnly": true
+        }
+      },
+      "required": ["nbits"]
     },
     "nonce": {
       "type": "integer",
@@ -107,7 +114,6 @@
     "previous_hash",
     "merkle_root",
     "timestamp",
-    "nbits",
     "nonce",
     "subsidy",
     "input",

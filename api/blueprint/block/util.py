@@ -10,7 +10,7 @@ GENESIS_TARGET_TRUNCATED = decimal.Decimal(
 )
 
 
-def compute_target(nbit):
+def compute_target(nbits: bytes) -> int:
     """Derive the target from the difficulty compact form stored with the block.
     
     https://en.bitcoin.it/wiki/Difficulty#How_is_difficulty_stored_in_blocks.3F
@@ -36,14 +36,12 @@ def compute_target(nbit):
     * complexities of the sign bit and using base 256 are probably an
     * implementation accident.
 
-    :param nbit: the difficulty of the block in the compact form. nbit is assumed to be ordered little endian and can be
+    :param nbits: the difficulty of the block in the compact form. nbit is assumed to be ordered little endian and can be
     represented as a uint32 integer (4 bytes).
-    :type nbit: bytes.
     :returns: the target of the block.
-    :rtype: int.
     """
-    exponent = int.from_bytes(nbit[-1], byteorder="little", signed=False)
-    mantissa = int.from_bytes(nbit[:-1], byteorder="little", signed=False)
+    exponent = int.from_bytes(nbits[-1], byteorder="little", signed=False)
+    mantissa = int.from_bytes(nbits[:-1], byteorder="little", signed=False)
     # since targets are never negative in practice, we don't care about the sign.
     # https://en.bitcoin.it/wiki/Difficulty#How_is_difficulty_stored_in_blocks.3F
     # N = mantissa * 256(exponent -3)

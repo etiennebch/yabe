@@ -74,7 +74,7 @@ class UnknownField(BaseError):
     """Error raised when an unknown field is found in a request payload.
     """
 
-    def __init__(self, field: str):
+    def __init__(self, field: str, path: deque = None):
         """Constructor.
 
         :param field: the name of the unknown field.
@@ -82,7 +82,10 @@ class UnknownField(BaseError):
         self.type = ErrorType.INVALID_REQUEST
         self.code = ErrorCode.UNKNOWN_FIELD
         self.status = HTTPStatus.BAD_REQUEST
-        self.message = f"Unknown field in request payload: {field}."
+        if path:
+            self.message = f"Unknown field at $.{'.'.join(path)}: {field}."
+        else:
+            self.message = f"Unknown field in request payload: {field}."
         self.parameter = None
         self.url = None
         super().__init__()
@@ -92,7 +95,7 @@ class RequiredField(BaseError):
     """Error raised when a required field is not present in the request payload.
     """
 
-    def __init__(self, field: str):
+    def __init__(self, field: str, path: deque = None):
         """Constructor.
 
         :param field: the name of the required field.
@@ -100,7 +103,10 @@ class RequiredField(BaseError):
         self.type = ErrorType.INVALID_REQUEST
         self.code = ErrorCode.REQUIRED_FIELD
         self.status = HTTPStatus.BAD_REQUEST
-        self.message = f"Missing required field in request payload: {field}."
+        if path:
+            self.message = f"Missing required field at $.{'.'.join(path)}: {field}."
+        else:
+            self.message = f"Missing required field in request payload: {field}."
         self.parameter = None
         self.url = None
         super().__init__()
