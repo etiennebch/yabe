@@ -29,8 +29,40 @@ Api will be written in Python to be developed rapidly. The frontend will be in R
 ## Competition
 
 https://www.lopp.net/bitcoin-information/block-explorers.html
+
 Differentiation can be found on:
 UI (few competitors have clean UI)
 Responsiveness (explorers tend to be slow especially when they have visualization)
 Great and useful visualizations (maps, graph, charts of fees and other financial information)
 Privacy. This is a big topic as users may browse their transactions.
+
+# Setup instructions
+
+Clone the repository and create an empty directory `data` in `db`. This directory is gitignore and holds the local database file.
+
+```shell
+git clone https://github.com/etiennebch/yabe
+mkdir -p yabe/db/data
+```
+
+## Database installation
+
+Now launch the local database (you need docker-compose installed). You'll also need the psql CLI installed to log into the database.
+
+```shell
+cd yabe/db
+docker-compose up -d db
+psql -U postgres -p 5433 -h localhost
+
+# required statement to execute as postgres before running migrations
+CREATE DATABASE explorer ENCODING 'UTF-8';
+```
+
+## Database migration
+
+Database migrations are handled by a dockerized Flyway, which is setup as part of the docker-compose file.
+In order for migrations to run the following environment variables must be declared:
+
+- `YABE_API_ROLENAME`
+- `YABE_API_PASSWORD`
+- `YABE_DB_NAME`

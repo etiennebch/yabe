@@ -1,0 +1,6 @@
+env
+env
+.vscode
+rest/db/data
+*.pyc
+rest/api/config/*.secret.json
